@@ -32,6 +32,7 @@ function timeToMinutes(time: string): number {
 //need to wrap readline inside a function to use async/await
 async function attendance(){
   console.log("Today's date is: ", today.toDateString());
+  const employeeName = await rl.question("Employee Name: ")
   const check_in = await rl.question("Please enter your check-in time (HH:MM): ")
   const check_out  = await rl.question("Please enter your check-out time (HH:MM): ")
 
@@ -45,7 +46,7 @@ async function attendance(){
 
   let totalMinutes = checkOutMinutes - checkInMinutes;
   let totalHours = Math.floor(totalMinutes / 60);
-  console.log("Total Worked Hour is:", totalHours,"Hours");
+  console.log(employeeName,"Total Worked Hour is:", totalHours,"Hours");
 }
 
 attendance();
