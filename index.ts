@@ -2,9 +2,6 @@
   import prisma from './database/db.js';
 
   type RL = readline.Interface;
-  const today: Date = new Date();
-
-
   //setup readline interface
   const rl : RL = readline.createInterface({
     input: process.stdin,
@@ -43,9 +40,70 @@ async function insert_employee(){
   rl.close();
 }
 
-insert_employee().catch((error) => {
-  console.error('Error inserting employee:', error);
+
+async function get_employee(){
+  //Type is alread inferred from the return type of prisma.employee.findMany()
+  const employee_col = await prisma.employee.findMany();
+  for (const employee of employee_col){
+    console.log(`Employee ID: ${employee.employee_id}, Name: ${employee.name}`);
+  }
   rl.close();
-}).finally(async () => {
-  await prisma.$disconnect();
-});
+}
+
+async function attendance(){
+  const check_in_time = await rl.question("Enter check-in time (HH:MM): ");
+  const check_out_time = await rl.question("Enter check-out time (HH:MM): ");
+
+  const today = new Date().toISOString().split('T')[0];
+  
+  const inserted_attendance = await prisma.attendance.create({
+    data: {
+      employee_id: 6, // Replace with the actual employee ID
+      // then converting it to a Date object
+      checkIn: new Date(`${today}T${check_in_time}:00`),
+      checkOut: new Date(`${today}T${check_out_time}:00`),
+      status: 'PRESENT',
+    }
+  });
+
+  console.log('Attendance successfully recorded:', inserted_attendance.work_date);
+  //Close the readline interface
+  rl.close();
+}
+
+
+console.log("Welcome to the Employee Attendance System!");
+console.log("Choose an option:");
+console.log("1. Insert a new employee");
+console.log("2. Get all employees");
+console.log("3. Record attendance for an employee");
+const choice = await rl.question("Enter your choice (1-3): ");
+switch (choice) {
+  case '1':
+    insert_employee().catch((error) => {
+      console.error('Error inserting employee:', error);
+      rl.close();
+    }).finally(async () => {
+      await prisma.$disconnect();
+    });
+    break;
+  case '2':
+    get_employee().catch((error) => {
+      console.error('Error retrieving employees:', error);
+      rl.close();
+    }).finally(async () => {
+      await prisma.$disconnect();
+    });
+    break;
+  case '3':
+    attendance().catch((error) => {
+      console.error('Error recording attendance:', error);
+      rl.close();
+    }).finally(async () => {
+      await prisma.$disconnect();
+    });
+    break;
+  default:
+    console.log("Invalid choice. Please enter '1', '2', or '3'.");
+    rl.close();
+}
