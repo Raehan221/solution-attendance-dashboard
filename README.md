@@ -7,6 +7,7 @@ data from the solution fingerprint as the source. Tech used in this project incl
 - PostgreSQL
 - Prisma
 - Tailwind CSS
+- Express JS
 
 ## Features
 - Database of employee data
