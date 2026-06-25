@@ -10,10 +10,19 @@ app.use(express.json());
 
 //Get list of all attendance records
 app.get('/get_attendance', async (req : express.Request, res : express.Response) => {
-    const attendance = await prisma.attendance.findMany();
+    const attendance = await prisma.attendance.findMany({
+      include : {
+        //include relation in query
+        employee: {select : {name:true}}
+      }
+    });
     res.json(attendance);
 });
 
+app.get('/get_employee', async (req:express.Request, res : express.Response) => {
+  const employee = await prisma.employee.findMany();
+  res.json(employee)
+})
 
 //Post request to create new attendance record
 app.post('/add_attendance', async (req : express.Request, res : express.Response) => {
